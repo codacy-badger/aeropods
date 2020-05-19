@@ -1,0 +1,27 @@
+{
+  "name": "@araclx/aeropods",
+  "version": "0.0.1-Alpha",
+  "private": true,
+  "description": "Production-ready boilerplate for building complete applications based on React.js, TypeScript and much more. Additioanlly this repository contains additional packages that will allow you to create your own CLI Applications, Server-side Microservices and Design Systems.",
+  "homepage": "https://github.com/araclx/aeropods",
+  "bugs": {
+    "url": "https://github.com/aralcx/aeropods/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aralcx/aeropods.git"
+  },
+  "author": "Jakub Olan <jakub.olan001@gmail.com>",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:docker": "docker-compose -f 'docker/docker-compose.dev.yml' up -d",
+    "prod:docker": "docker-compose -f 'docker/docker-compose.prod.yml' up -d"
+  },
+  "devDependencies": {
+    "lerna": "^3.18.5",
+    "prettier": "1.19.1",
+    "prettier-plugin-packagejson": "^2.0.10"
+  }
+}
