@@ -1,0 +1,71 @@
+version: '3.7'
+services:
+  # Node Container that uses HRM, and other development configuration to allow a active code generation on changes to provide them for Nginx server which will serve them on localhost.
+  client:
+    container_name: aeropods-client
+    image: aeropods/client:latest
+    command: yarn run dev
+    build:
+      context: ./packages/client
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./packages/client:/client
+      - /client/node_modules
+  # Node Container that have enabled watching source files and continously building them to provide a latest API served by Nginx on localhost/api/*.
+  api:
+    container_name: aeropods-api
+    image: aeropods/api:latest
+    command: yarn run start
+    build:
+      context: ./packages/api
+      dockerfile: Dockerfile
+    environment:
+      - DATABASE_URL=postgresql://ziqiln:ziqiln@postgres:5432/mydb?schema=sandbox
+    volumes:
+      - /api/node_modules
+  # Nginx container which connects a @aeropods/api and @aeropods/client services - providing access on localhost:80 to client, and localhost:80/api/ to API. In future there will be third service responsible for website and @aeropods/client will be moved to localhost:80/app/
+  server:
+    container_name: aeropods-server
+    image: aeropods/server:latest
+    build:
+      context: ./packages/server
+      dockerfile: Dockerfile.dev
+    ports:
+      - 80:80
+    links:
+      - client
+      - api
+  # Postgres database container, which is used by @aeropods/api service, whole configuration is based on .env files so please make sure you set important variables in your .env file.
+  postgres:
+    container_name: aeropods-postgres
+    image: postgres:latest
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=${DATABASE_USERNAME}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${DATABASE_NAME}
+    volumes:
+      - ./.cache/postgres:/var/lib/postgresql/data
+  # InfluxDB
+  influxdb:
+    container_name: aeropods-influx
+    image: influxdb:latest
+    ports:
+      - 8086:8086
+      - 2003:2003
+    environment:
+      - INFLUXDB_GRAPHITE_ENABLED=true
+      - INFLUXDB_DB=aeropods
+      - INFLUXDB_ADMIN_USER=aeropods
+      - INFLUXDB_ADMIN_PASSWORD=aeropods
+    volumes:
+      - ./.cache/influxdb:/var/lib/influxdb
+  # Chronograf
+  chronograf:
+    container_name: aeropods-chronograf
+    image: chronograf:latest
+    ports:
+      - 8888:8888
+    volumes:
+      - ./.cache/chronograf:/var/lib/chronograf

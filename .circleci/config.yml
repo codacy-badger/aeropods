@@ -1,0 +1,89 @@
+version: 2.1
+# Configuration of default executors.
+# TODO: Create a multiple enviroments to test, such as Windows, Linux and MacOS - that will provide more informations about compatiblity on different platforms.
+executors:
+  node:
+    docker:
+      - image: cimg/base:stable
+
+# CircleCI Orbs to simplify jobs.
+orbs:
+  node: circleci/node@2.0.3
+  browser-tools: circleci/browser-tools@1.0.0
+  heroku: circleci/heroku@1.0.1
+  codecov: codecov/codecov@1.0.5
+
+# Jobs
+jobs:
+  # Initally setups a project. Pulls a code and installs packages using Yarn.
+  build:
+    # Using a globally configured Node.js container.
+    executor: node
+    # Setting our working directory to aeropods folder in home.
+    working_directory: ~/aeropods
+    # Step by step process of "setup" job.
+    steps:
+      - checkout
+      # Install Node.js
+      - node/install:
+          install-yarn: true
+          node-version: "13.13.0"
+      - run:
+          name: Node.js Version
+          command: node --version
+      - run:
+          name: Yarn Version
+          command: yarn --version
+      # Installing Packages using a preffered orb with optimalization and caching patterns enabled.
+      - node/install-packages:
+          cache-key: yarn.lock
+          pkg-manager: yarn
+          with-cache: true
+          cache-version: v1
+          app-dir: ~/aeropods
+      # Building all available packages.
+      - run:
+          name: Build available packages
+          command: npx lerna run build
+  # Initally setups a project. Pulls a code and installs packages using Yarn.
+  test:
+    # Using a globally configured Node.js container.
+    executor: node
+    # Setting our working directory to aeropods folder in home.
+    working_directory: ~/aeropods
+    # Step by step process of "setup" job.
+    steps:
+      - checkout
+      # Install Node.js
+      - node/install:
+          install-yarn: true
+          node-version: "13.13.0"
+      - run:
+          name: Node.js Version
+          command: node --version
+      - run:
+          name: Yarn Version
+          command: yarn --version
+      # Installing Packages using a preffered orb with optimalization and caching patterns enabled.
+      - node/install-packages:
+          cache-key: yarn.lock
+          pkg-manager: yarn
+          with-cache: true
+          cache-version: v1
+          app-dir: ~/aeropods
+      # Installing packages for Chrome Headless enviroment, for ability to run a client-side tests with tools such as puppeter.
+      - browser-tools/install-browser-tools
+      # Running a general test scripts in all available packages.
+      - run:
+          name: Running unit tests in all packages
+          command: npx lerna run test:unit
+      - run:
+          name: Run coverage tests in all packages
+          command: npx lerna run test:coverage
+      - codecov/upload
+workflows:
+  version: 2
+  develop:
+    jobs:
+      - build
+      - test
