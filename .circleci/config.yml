@@ -98,7 +98,7 @@ jobs:
           dockerfile: "docker/Dockerfile.prod"
           image: "araclx/aeroweb"
       - docker/build:
-          path: "~/aeropods/packages/server/"
+          path: "~/aeropods/packages/nginx/"
           dockerfile: "docker/Dockerfile.dev"
           image: "araclx/aeroserv"
       - docker/push:
@@ -110,8 +110,18 @@ jobs:
 
 workflows:
   version: 2
-  develop:
+  # Building a nightly channel releases.
+  nightly:
     jobs:
       - build
-      - test
-      - docker_deploy
+      - test:
+          requires:
+            - build
+      - deploy_dockerhub:
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - develop
+                - master
