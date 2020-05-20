@@ -12,6 +12,5 @@ export class AboutRouter {
 	}
 	routes() {
 		this.router.get('/', this.controller.showInformation)
-		this.router.get('/postman', this.controller.postmanDocumentation)
 	}
 }

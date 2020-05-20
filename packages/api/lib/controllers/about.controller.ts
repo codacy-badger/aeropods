@@ -9,8 +9,4 @@ export class AboutController {
 			version: pkg.version,
 		})
 	}
-	public postmanDocumentation(req: Request, res: Response) {
-		const postmanDocumentation = require('../data/@aeropods-api.postman_collection.json')
-		res.json(postmanDocumentation)
-	}
 }
