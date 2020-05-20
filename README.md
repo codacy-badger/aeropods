@@ -1,21 +1,12 @@
-![aeropods_cover](./assets/aeropods-header.png)
+# Aeropods
 
-![GitHub](https://img.shields.io/github/license/araclx/aeropods)
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FARACLX%2Faeropods.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FARACLX%2Faeropods?ref=badge_shield)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/702ed6cc4b064ea3ac1c1d8cdb9217f7)](https://www.codacy.com/gh/ARACLX/aeropods?utm_source=github.com&utm_medium=referral&utm_content=ARACLX/aeropods&utm_campaign=Badge_Grade)
-[![CircleCI](https://circleci.com/gh/ARACLX/aeropods.svg?style=svg)](https://circleci.com/gh/ARACLX/aeropods)
 [![codecov](https://codecov.io/gh/ARACLX/aeropods/branch/master/graph/badge.svg)](https://codecov.io/gh/ARACLX/aeropods)
-[![Known Vulnerabilities](https://snyk.io/test/github/ARACLX/aeropods/badge.svg)](https://snyk.io/test/github/ARACLX/aeropods)
-
-Aeropods is a collection of common boilerplates that aims to simplify your
-process of building next application based on React.js or Node.js. There are
-out-of-box configuration for Webpack, Docker and Kubernetes.
-
-## What is contained in `aeropods` project?
+[![CircleCI](https://circleci.com/gh/ARACLX/aeropods.svg?style=svg)](https://circleci.com/gh/ARACLX/aeropods)
 
 Aeropods project stands for boilerplate for building a new applications, we're
 still thinking which sample application will be a optimal option that will allow
-to introduce edits and customized boilerplate for needs of your project.
+to introduce edits and customised boilerplate for needs of your project.
 
 ## Contributing
 
