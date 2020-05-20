@@ -1,10 +1,10 @@
 FROM node:12
 
 ENV NODE_ENV=development
+
 WORKDIR /api
 
 COPY package.json .
-COPY prisma/schema.prisma .
 
 RUN yarn
 

@@ -12,6 +12,7 @@ orbs:
   browser-tools: circleci/browser-tools@1.0.0
   heroku: circleci/heroku@1.0.1
   codecov: codecov/codecov@1.0.5
+  docker: circleci/docker@1.0.1
 
 # Jobs
 jobs:
@@ -81,9 +82,36 @@ jobs:
           name: Run coverage tests in all packages
           command: npx lerna run test:coverage
       - codecov/upload
+  docker_deploy:
+    executor: docker/docker
+    working_directory: ~/aeropods
+    steps:
+      - setup_remote_docker
+      - checkout
+      - docker/check
+      - docker/build:
+          path: "~/aeropods/packages/api/docker"
+          dockerfile: "Dockerfile"
+          image: "araclx/aeroapi"
+      - docker/build:
+          path: "~/aeropods/packages/web/docker"
+          dockerfile: "Dockerfile"
+          image: "araclx/aeroweb"
+      - docker/build:
+          path: "~/aeropods/packages/server/docker"
+          dockerfile: "Dockerfile"
+          image: "araclx/aeroserv"
+      - docker/push:
+          image: araclx/aeroapi
+      - docker/push:
+          image: araclx/aeroweb
+      - docker/push:
+          image: araclx/aeroserv
+
 workflows:
   version: 2
   develop:
     jobs:
       - build
       - test
+      - docker_deploy
