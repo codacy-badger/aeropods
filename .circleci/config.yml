@@ -82,7 +82,7 @@ jobs:
           name: Run coverage tests in all packages
           command: npx lerna run test:coverage
       - codecov/upload
-  docker_deploy:
+  deploy_dockerhub:
     executor: docker/docker
     working_directory: ~/aeropods
     steps:
