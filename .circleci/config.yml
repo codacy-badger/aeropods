@@ -83,7 +83,7 @@ jobs:
           command: npx lerna run test:coverage
       - codecov/upload
   # Job that builds all of aeropods packages to Docker Image and push to DockerHub.
-  deploy_dockerhub:
+  deploy_docker_dockerhub:
     executor: docker/docker
     working_directory: ~/aeropods
     steps:
@@ -115,8 +115,8 @@ jobs:
       - setup_remote_docker
       - checkout
       - docker/check:
-          docker-password: GITHUB_TOKEN
           docker-username: GITHUB_LOGIN
+          docker-password: GITHUB_TOKEN
           registry: docker.pkg.github.com
       - docker/build:
           path: "~/aeropods/packages/api/"
@@ -148,7 +148,7 @@ workflows:
               only:
                 - develop
                 - master
-      - deploy_dockerhub:
+      - deploy_docker_dockerhub:
           requires:
             - test
           filters:

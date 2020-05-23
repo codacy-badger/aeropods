@@ -6,7 +6,7 @@ import cors from 'cors'
 import morgan from 'morgan'
 
 // Packages contained in code which refers to routers, utilities and so on.
-import { AboutRouter, UserRouter } from './routers'
+import { AboutRouter } from './routers'
 // import { Database } from './services'
 
 export class ServerInstance {
