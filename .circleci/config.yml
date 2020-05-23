@@ -82,6 +82,7 @@ jobs:
           name: Run coverage tests in all packages
           command: npx lerna run test:coverage
       - codecov/upload
+  # Job that builds all of aeropods packages to Docker Image and push to DockerHub.
   deploy_dockerhub:
     executor: docker/docker
     working_directory: ~/aeropods
@@ -107,9 +108,31 @@ jobs:
           image: araclx/aeroweb
       - docker/push:
           image: araclx/aeroserv
+  deploy_docker_github:
+    executor: docker/docker
+    working_directory: ~/aeropods
+    steps:
+      - setup_remote_docker
+      - checkout
+      - docker/check:
+          docker-password: GITHUB_TOKEN
+          docker-username: GITHUB_LOGIN
+          registry: docker.pkg.github.com
+      - docker/build:
+          path: "~/aeropods/packages/api/"
+          dockerfile: "docker/Dockerfile.prod"
+          image: araclx/aeropods/api
+          tag: latest
+          registry: docker.pkg.github.com
+      - docker/push:
+          image: araclx/aeropods/api
+          tag: latest
+          registry: docker.pkg.github.com
 
 workflows:
   version: 2
+  # TODO: Workflow for production channel.
+  # TODO: Workflow for beta channel.
   # Building a nightly channel releases.
   nightly:
     jobs:
@@ -117,6 +140,14 @@ workflows:
       - test:
           requires:
             - build
+      - deploy_docker_github:
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - develop
+                - master
       - deploy_dockerhub:
           requires:
             - test
