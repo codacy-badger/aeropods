@@ -7,7 +7,7 @@ import morgan from 'morgan'
 
 // Packages contained in code which refers to routers, utilities and so on.
 import { AboutRouter, UserRouter } from './routers'
-import { Database } from './services'
+// import { Database } from './services'
 
 export class ServerInstance {
 	/* Basic Declarations */
@@ -33,7 +33,7 @@ export class ServerInstance {
 	/* Routers contained in application */
 	public routes(): void {
 		this.core.use('/', new AboutRouter().router)
-		this.core.use('/user', new UserRouter().router)
+		// this.core.use('/user', new UserRouter().router)
 	}
 
 	/* Implmenetation of service responsible for database */
