@@ -1,6 +1,6 @@
 FROM node:12
 
-ENV NODE_ENV=development
+ENV NODE_ENV=production
 
 WORKDIR /api
 
@@ -10,4 +10,4 @@ RUN yarn
 
 EXPOSE 3600
 
-CMD ["yarn", "run", "dev"]
+CMD ["yarn", "run", "start"]

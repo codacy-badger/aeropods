@@ -4,10 +4,10 @@ ENV NODE_ENV=development
 
 WORKDIR /web
 
-COPY package.json yarn.lock .
+COPY package.json .
 
-RUN yarn install
+RUN yarn
 
-EXPOSE 3333
+EXPOSE 8080
 
 CMD ["yarn", "run", "start"]
