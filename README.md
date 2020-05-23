@@ -8,6 +8,8 @@ Aeropods project stands for boilerplate for building a new applications, we're
 still thinking which sample application will be a optimal option that will allow
 to introduce edits and customised boilerplate for needs of your project.
 
+> Currently Aeropods are building in monorepo under ARACLX Corp. GitHub, but in near future we'll move them to specified GitHub organisation which will improve navigation and organisation of packages.
+
 ## Contributing
 
 The main purpose of this repository is to continue to evolve advanced
