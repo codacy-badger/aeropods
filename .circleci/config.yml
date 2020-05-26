@@ -64,26 +64,14 @@ jobs:
           with-cache: true
           cache-version: v1
           app-dir: ~/aeropods
-      - browser-tools/install-browser-tools
-      - run:
-          name: Setup Code Climate test-reporter
-          command: |
-            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-            chmod +x ./cc-test-reporter
+      # NOTE: Actually we don't need that.
+      # - browser-tools/install-browser-tools
       - run:
           name: Running unit tests in all packages
           command: npx lerna run test:unit
       - run:
           name: Run coverage tests in all packages
           command: npx lerna run test:coverage
-      - run:
-          name: Collect Coverage with CodeClimate
-          command: |
-            cp cc-test-reporter ~/aeropods/packages/api
-            cd ~/aeropods/packages/api
-            ./cc-test-reporter before-build
-            yarn run test:coverage
-            ./cc-test-reporter after-build --coverage-input-type lcov -p
       - codecov/upload
 
   deploy_docker_dockerhub:
