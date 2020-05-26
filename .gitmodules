@@ -4,3 +4,6 @@
 [submodule "packages/nginx"]
 	path = packages/nginx
 	url = https://github.com/ARACLX/aeropods.nginx.git
+[submodule "packages/web"]
+	path = packages/web
+	url = https://github.com/ARACLX/aeropods.web.git
