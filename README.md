@@ -24,7 +24,9 @@ ARACLX Corp. has adopted a Code of Conduct that we expect project participants
 to adhere. Please read it so that you can understand what actions will and will
 not be tolerated.
 
-- [ ] Contributing Guide
+### [Contributing Guide](./CONTRIBUTING.md)
+
+Read our contributing guide to learn about our development process how to propose bugfixes and improvements to build and test your changes to Aeropods.
 
 ## License
 
