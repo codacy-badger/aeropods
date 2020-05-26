@@ -120,10 +120,30 @@ jobs:
           image: araclx/aeropods/aeroapi
           tag: latest
           registry: docker.pkg.github.com
+      - docker/build:
+          path: "~/aeropods/packages/web/"
+          dockerfile: "docker/Dockerfile.prod"
+          image: araclx/aeropods/aeroweb
+          tag: latest
+          registry: docker.pkg.github.com
+      - docker/build:
+          path: "~/aeropods/packages/nginx/"
+          dockerfile: "docker/Dockerfile.dev"
+          image: araclx/aeropods/aeroserv
+          tag: latest
+          registry: docker.pkg.github.com
       - docker/push:
           tag: latest
           registry: docker.pkg.github.com
           image: araclx/aeropods/aeroapi
+      - docker/push:
+          tag: latest
+          registry: docker.pkg.github.com
+          image: araclx/aeropods/aeroserv
+      - docker/push:
+          tag: latest
+          registry: docker.pkg.github.com
+          image: araclx/aeropods/aeroweb
 
 workflows:
   version: 2
