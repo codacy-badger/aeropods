@@ -1,31 +1,29 @@
+# CircleCI Configuration for CircleCI 2.1 Platform
 version: 2.1
-# Configuration of default executors.
-# TODO: Create a multiple enviroments to test, such as Windows, Linux and MacOS - that will provide more informations about compatiblity on different platforms.
+
+# Definition of common executors used in project.
 executors:
   node:
     docker:
       - image: cimg/base:stable
 
-# CircleCI Orbs to simplify jobs.
+# Definition of Orbs used to simplify configuration file.
 orbs:
   node: circleci/node@2.0.3
   browser-tools: circleci/browser-tools@1.0.0
   heroku: circleci/heroku@1.0.1
   codecov: codecov/codecov@1.0.5
   docker: circleci/docker@1.0.1
+  codeclimate: socialtables/code-climate@0.2.1
 
-# Jobs
+# Definition of Jobs used in Workflows 2.0.
 jobs:
-  # Initally setups a project. Pulls a code and installs packages using Yarn.
+  # Initally setups a project and builds all available packages.
   build:
-    # Using a globally configured Node.js container.
     executor: node
-    # Setting our working directory to aeropods folder in home.
     working_directory: ~/aeropods
-    # Step by step process of "setup" job.
     steps:
       - checkout
-      # Install Node.js
       - node/install:
           install-yarn: true
           node-version: "13.13.0"
@@ -35,27 +33,22 @@ jobs:
       - run:
           name: Yarn Version
           command: yarn --version
-      # Installing Packages using a preffered orb with optimalization and caching patterns enabled.
       - node/install-packages:
           cache-key: yarn.lock
           pkg-manager: yarn
           with-cache: true
           cache-version: v1
           app-dir: ~/aeropods
-      # Building all available packages.
       - run:
           name: Build available packages
           command: npx lerna run build
-  # Initally setups a project. Pulls a code and installs packages using Yarn.
+
+  # Initally setups a project and runs unit tests in all packages.
   test:
-    # Using a globally configured Node.js container.
     executor: node
-    # Setting our working directory to aeropods folder in home.
     working_directory: ~/aeropods
-    # Step by step process of "setup" job.
     steps:
       - checkout
-      # Install Node.js
       - node/install:
           install-yarn: true
           node-version: "13.13.0"
@@ -65,24 +58,34 @@ jobs:
       - run:
           name: Yarn Version
           command: yarn --version
-      # Installing Packages using a preffered orb with optimalization and caching patterns enabled.
       - node/install-packages:
           cache-key: yarn.lock
           pkg-manager: yarn
           with-cache: true
           cache-version: v1
           app-dir: ~/aeropods
-      # Installing packages for Chrome Headless enviroment, for ability to run a client-side tests with tools such as puppeter.
       - browser-tools/install-browser-tools
-      # Running a general test scripts in all available packages.
+      - run:
+          name: Setup Code Climate test-reporter
+          command: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
       - run:
           name: Running unit tests in all packages
           command: npx lerna run test:unit
       - run:
           name: Run coverage tests in all packages
           command: npx lerna run test:coverage
+      - run:
+          name: Collect Coverage with CodeClimate
+          command: |
+            cp cc-test-reporter ~/aeropods/packages/api
+            cd ~/aeropods/packages/api
+            ./cc-test-reporter before-build
+            yarn run test:coverage
+            ./cc-test-reporter after-build --coverage-input-type lcov -p
       - codecov/upload
-  # Job that builds all of aeropods packages to Docker Image and push to DockerHub.
+
   deploy_docker_dockerhub:
     executor: docker/docker
     working_directory: ~/aeropods
@@ -93,21 +96,28 @@ jobs:
       - docker/build:
           path: "~/aeropods/packages/api/"
           dockerfile: "docker/Dockerfile.prod"
+          tag: latest
           image: "araclx/aeroapi"
       - docker/build:
           path: "~/aeropods/packages/web/"
           dockerfile: "docker/Dockerfile.prod"
+          tag: latest
           image: "araclx/aeroweb"
       - docker/build:
           path: "~/aeropods/packages/nginx/"
           dockerfile: "docker/Dockerfile.dev"
+          tag: latest
           image: "araclx/aeroserv"
       - docker/push:
           image: araclx/aeroapi
+          tag: latest
       - docker/push:
           image: araclx/aeroweb
+          tag: latest
       - docker/push:
           image: araclx/aeroserv
+          tag: latest
+
   deploy_docker_github:
     executor: docker/docker
     working_directory: ~/aeropods
@@ -115,29 +125,60 @@ jobs:
       - setup_remote_docker
       - checkout
       - docker/check:
-          docker-username: GITHUB_LOGIN
+          docker-username: GITHUB_USERNAME
           docker-password: GITHUB_TOKEN
           registry: docker.pkg.github.com
       - docker/build:
           path: "~/aeropods/packages/api/"
           dockerfile: "docker/Dockerfile.prod"
-          image: araclx/aeropods/api
+          image: araclx/aeropods/aeroapi
+          tag: latest
+          registry: docker.pkg.github.com
+      - docker/build:
+          path: "~/aeropods/packages/web/"
+          dockerfile: "docker/Dockerfile.prod"
+          image: araclx/aeropods/aeroweb
+          tag: latest
+          registry: docker.pkg.github.com
+      - docker/build:
+          path: "~/aeropods/packages/nginx/"
+          dockerfile: "docker/Dockerfile.dev"
+          image: araclx/aeropods/aeroserv
           tag: latest
           registry: docker.pkg.github.com
       - docker/push:
-          image: araclx/aeropods/api
           tag: latest
           registry: docker.pkg.github.com
+          image: araclx/aeropods/aeroapi
+      - docker/push:
+          tag: latest
+          registry: docker.pkg.github.com
+          image: araclx/aeropods/aeroserv
+      - docker/push:
+          tag: latest
+          registry: docker.pkg.github.com
+          image: araclx/aeropods/aeroweb
 
 workflows:
   version: 2
-  # TODO: Workflow for production channel.
-  # TODO: Workflow for beta channel.
-  # Building a nightly channel releases.
-  nightly:
+  # Development Workflow is dedicated for testing development branches such as develop or feature/*, it doesn't deploy applications nowhere.
+  development:
     jobs:
-      - build
+      - test
+  # Production Workflow is dediced to build master and develop branches, test all packages and then deploy them to hosting services that matter.
+  # TODO: Improve filters and flow in production.
+  production:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only:
+                - master
       - test:
+          filters:
+            branches:
+              only:
+                - master
           requires:
             - build
       - deploy_docker_github:
@@ -146,7 +187,6 @@ workflows:
           filters:
             branches:
               only:
-                - develop
                 - master
       - deploy_docker_dockerhub:
           requires:
@@ -154,5 +194,4 @@ workflows:
           filters:
             branches:
               only:
-                - develop
                 - master

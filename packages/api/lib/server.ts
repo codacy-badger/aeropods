@@ -7,7 +7,7 @@ import morgan from 'morgan'
 
 // Packages contained in code which refers to routers, utilities and so on.
 import { AboutRouter } from './routers'
-// import { Database } from './services'
+import { Database } from './services'
 
 export class ServerInstance {
 	/* Basic Declarations */
@@ -38,7 +38,6 @@ export class ServerInstance {
 
 	/* Implmenetation of service responsible for database */
 	private database(): void {
-		// Tempomary disabled due to lack of testing
-		// new Database().mongo
+		new Database().mongo
 	}
 }
