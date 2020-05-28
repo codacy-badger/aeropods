@@ -1,8 +1,9 @@
 version: "3.8"
+# Definition of services in development enviroment.
 services:
   web:
     container_name: aeropods-web
-    image: aeropods/web:latest
+    image: araclx/aeroweb:latest
     command: yarn run start
     build:
       context: ../packages/web/
@@ -10,9 +11,10 @@ services:
     volumes:
       - ../packages/web:/web
       - /web/node_modules
+
   api:
     container_name: aeropods-api
-    image: aeropods/api:latest
+    image: araclx/aeroapi:latest
     command: yarn run dev
     build:
       context: ../packages/api/
@@ -20,11 +22,16 @@ services:
     volumes:
       - ../packages/api:/api
       - /api/node_modules
+    enviroment:
+      - MONGODB_URL=mongodb://mongo:27017
+      - NODE_ENV=development
     links:
       - mongodb
+
+  # Service responsible for connecting api and web service into one place, into one location - in this case it's localhost:80.
   nginx:
     container_name: aeropods-nginx
-    image: aeropods/server:latest
+    image: araclx/aeroserv:latest
     build:
       context: ../packages/nginx/
       dockerfile: docker/Dockerfile.dev
@@ -33,6 +40,7 @@ services:
     links:
       - web
       - api
+
   mongodb:
     container_name: aeropods-mongodb
     image: mongo:latest

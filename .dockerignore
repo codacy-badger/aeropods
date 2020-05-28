@@ -2,6 +2,7 @@
 .gitignore
 .github
 .gitattributes
+.env
 node_modules
 dist
 README.md
