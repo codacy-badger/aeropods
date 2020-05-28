@@ -38,23 +38,3 @@ that are used by Aeropods.
 
 | Aeropods are distributed under [MIT License](./LICENSE). | [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FARACLX%2Faeropods.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FARACLX%2Faeropods?ref=badge_large) |
 | :------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-
-
-TEMP: Atom Configuration
-- atom-animatios
-- atom-ide-ui
-- atom-typescript
-- busy-signal
-- editorconfig
-- file-icons
-- go-plus
-- ide-docker
-- ide-go
-- ide-json
-- ide-reason
-- ide-rust
-- ide-yaml
-- language-dotenv
-- eslint
-- prettier-atom
-- minimap
